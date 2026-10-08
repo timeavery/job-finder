@@ -14,5 +14,5 @@ jobs = json.loads(response.read())
 
 print("Latest jobs:")
 
-for job in jobs[1:6\]:
+for job in jobs[1:6]:
     print(job.get("position", "Unknown"))
