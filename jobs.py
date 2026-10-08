@@ -13,6 +13,69 @@ KEYWORDS = [
     "product owner"
 ]
 
+def write_html_report(jobs):
+
+    html = """
+    <html>
+    <head>
+        <title>Job Report</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+            }
+
+            .job {
+                border: 1px solid #cccccc;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 5px;
+            }
+
+            .title {
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .company {
+                color: #444444;
+            }
+
+            a {
+                color: blue;
+            }
+        </style>
+    </head>
+    <body>
+
+        <h1>Daily Job Report</h1>
+
+    """
+
+    for job in jobs:
+
+        html += f"""
+        <div class="job">
+            <div class="title">{job['title']}</div>
+            <div class="company">{job['company']}</div>
+            <div>{job['location']}</div>
+            <div>{job['source']}</div>
+
+            <p>
+                {job['url']}
+                    View Job
+                </a>
+            </p>
+        </div>
+        """
+
+    html += """
+    </body>
+    </html>
+    """
+
+    with open("jobs_report.html", "w", encoding="utf-8") as f:
+        f.write(html)
 
 def load_seen_jobs():
 
@@ -161,6 +224,9 @@ def main():
 
     save_seen_jobs(updated_seen_jobs)
 
+    write_html_report(new_jobs)
+    print("HTML report written to jobs_report.html")
+    
     print()
     print(f"Jobs before dedupe : {len(all_jobs)}")
     print(f"Jobs after dedupe  : {len(unique_jobs)}")
