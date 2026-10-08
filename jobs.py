@@ -14,5 +14,18 @@ jobs = json.loads(response.read())
 
 print("Latest jobs:")
 
-for job in jobs[1:6]:
-    print(job.get("position", "Unknown"))
+keywords = [
+    "business",
+    "consultant",
+    "analyst",
+    "technical",
+    "product"
+]
+
+print("Matching jobs:")
+
+for job in jobs[1:]:
+    title = job.get("position", "")
+
+    if any(word in title.lower() for word in keywords):
+        print(title)
