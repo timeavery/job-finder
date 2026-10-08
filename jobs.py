@@ -1,5 +1,6 @@
 import os
 import requests
+from pathlib import Path
 
 MAX_RESULTS = 10
 
@@ -101,9 +102,10 @@ def write_html_report(jobs):
 </html>
 """
 
-    with open("jobs_report.html", "w", encoding="utf-8") as f:
-        f.write(html)
+Path("docs").mkdir(exist_ok=True)
 
+with open("docs/index.html", "w", encoding="utf-8") as f:
+    f.write(html)
 
 def get_reed_jobs():
 
