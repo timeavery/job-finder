@@ -14,43 +14,55 @@ KEYWORDS = [
 
 def write_html_report(jobs):
 
-    html = """
+    html = f"""
 <html>
 <head>
-    <title>Job Report</title>
+    <title>Job Search Report</title>
 
     <style>
-        body {
+
+        body {{
             font-family: Arial, sans-serif;
             margin: 20px;
-        }
+        }}
 
-        .job {
+        .job {{
             border: 1px solid #cccccc;
+            border-radius: 5px;
             padding: 12px;
             margin-bottom: 12px;
-            border-radius: 5px;
-        }
+        }}
 
-        .title {
+        .title {{
             font-size: 18px;
             font-weight: bold;
-        }
+        }}
 
-        .company {
-            color: #444444;
-        }
+        .company {{
+            color: #555555;
+        }}
 
-        a {
+        .source {{
+            color: #777777;
+            font-size: 12px;
+        }}
+
+        a {{
             color: #0066cc;
-        }
+        }}
+
     </style>
+
 </head>
 
 <body>
 
 <h1>Job Search Report</h1>
-<p>Jobs found: """ + str(len(jobs)) + """</p>
+
+<p>
+    Total Jobs Found: {len(jobs)}
+</p>
+
 """
 
     for job in jobs:
@@ -59,23 +71,23 @@ def write_html_report(jobs):
 <div class="job">
 
     <div class="title">
-        {job['title']}
+        {job["title"]}
     </div>
 
     <div class="company">
-        {job['company']}
+        {job["company"]}
     </div>
 
     <div>
-        {job['location']}
+        {job["location"]}
     </div>
 
-    <div>
-        Source: {job['source']}
+    <div class="source">
+        Source: {job["source"]}
     </div>
 
     <p>
-        {job['url']}
+        {job[
             View Job
         </a>
     </p>
