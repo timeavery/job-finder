@@ -1,0 +1,20 @@
+name: Test Key
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check secret exists
+        env:
+          REED_API_KEY: ${{ secrets.REED_API_KEY }}
+        run: |
+          if [ -z "$REED_API_KEY" ]; then
+            echo "Key not found"
+            exit 1
+          else
+            echo "Key found"
+          fi
