@@ -2,8 +2,10 @@ import os
 import requests
 
 def get_reed_jobs():
+    print("Getting jobs from Reed")
+    
     api_key = os.environ["REED_API_KEY"]
-
+    
     response = requests.get(
         "https://www.reed.co.uk/api/1.0/search",
         params={
