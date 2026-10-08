@@ -13,7 +13,7 @@ KEYWORDS = [
     "product owner"
 ]
 
-def get_reed_jobs():
+def get_reed_jobsX():
 
     api_key = os.environ["REED_API_KEY"]
 
@@ -52,7 +52,7 @@ def get_reed_jobs():
 
 
 
-def get_adzuna_jobs():
+def get_adzuna_jobsX():
 
     app_id = os.environ["ADZUNA_APP_ID"]
     app_key = os.environ["ADZUNA_APP_KEY"]
@@ -97,12 +97,12 @@ def main():
     all_jobs = []
 
     try:
-        all_jobs.extend(get_reed_jobs())
+        all_jobs.extend(get_reed_jobs(KEYWORDS, MAX_RESULTS))
     except Exception as ex:
         print(f"Reed failed: {ex}")
 
     try:
-        all_jobs.extend(get_adzuna_jobs())
+        all_jobs.extend(get_adzuna_jobs(KEYWORDS, MAX_RESULTS))
     except Exception as ex:
         print(f"Adzuna failed: {ex}")
 
