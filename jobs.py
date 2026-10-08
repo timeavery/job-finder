@@ -1,6 +1,7 @@
 import os
 import requests
-from pathlib import Path
+
+from report import write_html_report
 
 MAX_RESULTS = 10
 
