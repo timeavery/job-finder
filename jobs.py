@@ -1,9 +1,7 @@
 import os
-import json
 import requests
 
 MAX_RESULTS = 10
-SEEN_JOBS_FILE = "seen_jobs.json"
 
 KEYWORDS = [
     "business analyst",
@@ -13,88 +11,85 @@ KEYWORDS = [
     "product owner"
 ]
 
+
 def write_html_report(jobs):
 
     html = """
-    <html>
-    <head>
-        <title>Job Report</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 20px;
-            }
+<html>
+<head>
+    <title>Job Report</title>
 
-            .job {
-                border: 1px solid #cccccc;
-                padding: 10px;
-                margin-bottom: 10px;
-                border-radius: 5px;
-            }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
 
-            .title {
-                font-size: 18px;
-                font-weight: bold;
-            }
+        .job {
+            border: 1px solid #cccccc;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 5px;
+        }
 
-            .company {
-                color: #444444;
-            }
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+        }
 
-            a {
-                color: blue;
-            }
-        </style>
-    </head>
-    <body>
+        .company {
+            color: #444444;
+        }
 
-        <h1>Daily Job Report</h1>
+        a {
+            color: #0066cc;
+        }
+    </style>
+</head>
 
-    """
+<body>
+
+<h1>Job Search Report</h1>
+<p>Jobs found: """ + str(len(jobs)) + """</p>
+"""
 
     for job in jobs:
 
         html += f"""
-        <div class="job">
-            <div class="title">{job['title']}</div>
-            <div class="company">{job['company']}</div>
-            <div>{job['location']}</div>
-            <div>{job['source']}</div>
+<div class="job">
 
-            <p>
-                {job['url']}
-                    View Job
-                </a>
-            </p>
-        </div>
-        """
+    <div class="title">
+        {job['title']}
+    </div>
+
+    <div class="company">
+        {job['company']}
+    </div>
+
+    <div>
+        {job['location']}
+    </div>
+
+    <div>
+        Source: {job['source']}
+    </div>
+
+    <p>
+        {job['url']}
+            View Job
+        </a>
+    </p>
+
+</div>
+"""
 
     html += """
-    </body>
-    </html>
-    """
+</body>
+</html>
+"""
 
     with open("jobs_report.html", "w", encoding="utf-8") as f:
         f.write(html)
-
-def load_seen_jobs():
-
-    try:
-        with open(SEEN_JOBS_FILE, "r") as f:
-            return set(json.load(f))
-
-    except FileNotFoundError:
-        return set()
-
-
-def save_seen_jobs(seen_jobs):
-
-    with open(SEEN_JOBS_FILE, "w") as f:
-        json.dump(
-            sorted(list(seen_jobs)),
-            f,
-            indent=2
-        )
 
 
 def get_reed_jobs():
@@ -177,8 +172,6 @@ def get_adzuna_jobs():
 
 def main():
 
-    seen_jobs = load_seen_jobs()
-
     all_jobs = []
 
     try:
@@ -206,41 +199,13 @@ def main():
             dedupe_keys.add(key)
             unique_jobs.append(job)
 
-    new_jobs = []
-    updated_seen_jobs = set(seen_jobs)
-
-    for job in unique_jobs:
-
-        job_id = "|".join([
-            (job["title"] or "").lower().strip(),
-            (job["company"] or "").lower().strip(),
-            (job["location"] or "").lower().strip()
-        ])
-
-        if job_id not in seen_jobs:
-            new_jobs.append(job)
-
-        updated_seen_jobs.add(job_id)
-
-    save_seen_jobs(updated_seen_jobs)
-
-    write_html_report(new_jobs)
-    print("HTML report written to jobs_report.html")
-    
     print()
     print(f"Jobs before dedupe : {len(all_jobs)}")
     print(f"Jobs after dedupe  : {len(unique_jobs)}")
-    print(f"Previously seen    : {len(seen_jobs)}")
-    print(f"New jobs found     : {len(new_jobs)}")
 
-    for job in new_jobs:
+    write_html_report(unique_jobs)
 
-        print()
-        print("----------------------------------------")
-        print(f"Title    : {job['title']}")
-        print(f"Company  : {job['company']}")
-        print(f"Location : {job['location']}")
-        print(f"URL      : {job['url']}")
+    print("HTML report written to jobs_report.html")
 
 
 if __name__ == "__main__":
