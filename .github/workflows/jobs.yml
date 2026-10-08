@@ -19,3 +19,5 @@ jobs:
 
       - name: Run script
         run: python jobs.py
+        env:
+          REED_API_KEY: ${{ secrets.REED_API_KEY }}
