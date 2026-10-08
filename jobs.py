@@ -1,7 +1,9 @@
 import os
 import requests
+import json
 
 MAX_RESULTS = 10
+SEEN_JOBS_FILE = "seen_jobs.json"
 
 KEYWORDS = [
     "business analyst",
@@ -10,6 +12,15 @@ KEYWORDS = [
     "solutions consultant",
     "product owner"
 ]
+
+def save_seen_jobs(seen_jobs):
+
+    with open(SEEN_JOBS_FILE, "w") as f:
+        json.dump(
+            sorted(list(seen_jobs)),
+            f,
+            indent=2
+        )
 
 def get_reed_jobs():
     api_key = os.environ["REED_API_KEY"]
@@ -85,6 +96,8 @@ def get_adzuna_jobs():
 
 def main():
 
+    seen_jobs = load_seen_jobs()
+    
     all_jobs = []
 
     try:
@@ -126,6 +139,8 @@ def main():
         print(f"Company  : {job['company']}")
         print(f"Location : {job['location']}")
         print(f"URL      : {job['url']}")
+
+    save_seen_jobs(new_seen_jobs)
 
 
 if __name__ == "__main__":
