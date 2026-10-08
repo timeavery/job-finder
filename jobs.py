@@ -1,44 +1,49 @@
-import urllib.request
-import json
+import os
+import requests
 
-# url = "https://api.adzuna.com/v1/api/jobs/gb/search/1"
-url = "https://remoteok.com/api"
+def get_reed_jobs():
+    api_key = os.environ["REED_API_KEY"]
 
-request = urllib.request.Request(
-    url,
-    headers={"User-Agent": "Mozilla/5.0"}
-)
+    response = requests.get(
+        "https://www.reed.co.uk/api/1.0/search",
+        params={
+            "keywords": "business analyst",
+            "resultsToTake": 10
+        },
+        auth=(api_key, "")
+    )
 
-response = urllib.request.urlopen(request)
+    data = response.json()
 
-jobs = json.loads(response.read())
+    jobs = []
 
-print("Latest jobs:")
+    for job in data.get("results", []):
+        jobs.append({
+            "source": "Reed",
+            "title": job["jobTitle"],
+            "company": job["employerName"],
+            "location": job["locationName"],
+            "salary_min": job.get("minimumSalary"),
+            "salary_max": job.get("maximumSalary"),
+            "url": job["jobUrl"]
+        })
 
-keywords = [
-    "analyst",
-    "business analyst",
-    "consultant",
-    "technical consultant",
-    "product owner",
-    "implementation",
-    "integration",
-    "solution",
-    "pre sales",
-    "presales"
-]
+    return jobs
 
-print("Matching jobs:")
 
-for job in jobs[1:]:
-    title = job.get("position", "")
+def main():
+    jobs = []
 
-    if any(word in title.lower() for word in keywords):
+    jobs.extend(get_reed_jobs())
 
-        print(title)
+    print(f"Found {len(jobs)} jobs")
 
-        print(job.get("location", "Remote"))
+    for job in jobs:
+        print()
+        print(job["title"])
+        print(job["company"])
+        print(job["location"])
 
-        print(job.get("url", ""))
 
-        print("--------------------------------")
+if __name__ == "__main__":
+    main()
