@@ -66,34 +66,35 @@ def write_html_report(jobs):
 """
 
     for job in jobs:
-
+        
         html += f"""
-<div class="job">
-
-    <div class="title">
-        {job["title"]}
-    </div>
-
-    <div class="company">
-        {job["company"]}
-    </div>
-
-    <div>
-        {job["location"]}
-    </div>
-
-    <div class="source">
-        Source: {job["source"]}
-    </div>
-
-    <p>
-        {job[
-            View Job
-        </a>
-    </p>
-
-</div>
-"""
+        <div class="job">
+        
+            <div class="title">
+                {job["title"]}
+            </div>
+        
+            <div class="company">
+                {job["company"]}
+            </div>
+        
+            <div>
+                {job["location"]}
+            </div>
+        
+            <div class="source">
+                Source: {job["source"]}
+            </div>
+        
+            <p>
+                {job['url']}
+                    View Job
+                </a>
+            </p>
+        
+        </div>
+        
+        """
 
     html += """
 </body>
