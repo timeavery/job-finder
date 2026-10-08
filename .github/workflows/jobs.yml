@@ -1,4 +1,4 @@
-name: Daily Jobs
+name: Job Search
 
 on:
   workflow_dispatch:
