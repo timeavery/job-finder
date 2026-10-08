@@ -14,7 +14,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install requests
+      - name: Install dependencies
         run: pip install -r requirements.txt
 
       - name: Run script
@@ -23,3 +23,9 @@ jobs:
           REED_API_KEY: ${{ secrets.REED_API_KEY }}
           ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+  
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs-report
+          path: jobs_report.html
