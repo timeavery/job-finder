@@ -10,34 +10,38 @@ KEYWORDS = [
     "solutions consultant",
     "product owner"
 ]
-SEARCH_TEXT = " OR ".join(KEYWORDS)
 
 def get_reed_jobs():
     api_key = os.environ["REED_API_KEY"]
-
-    response = requests.get(
-        "https://www.reed.co.uk/api/1.0/search",
-        params={
-            "keywords": SEARCH_TEXT,
-            "resultsToTake": MAX_RESULTS
-        },
-        auth=(api_key, "")
-    )
-
-    print(f"Reed status: {response.status_code}")
-
-    data = response.json()
-
+    URL =  "https://www.reed.co.uk/api/1.0/search"
+  
     jobs = []
 
-    for job in data.get("results", []):
-        jobs.append({
-            "source": "Reed",
-            "title": job.get("jobTitle"),
-            "company": job.get("employerName"),
-            "location": job.get("locationName"),
-            "url": job.get("jobUrl")
-        })
+    for keyword in KEYWORDS:
+
+        print(f"Searching Reed for: {keyword}")
+
+        response = requests.get(
+            URL,
+            params={
+                "keywords": keyword,
+                "resultsToTake": MAX_RESULTS
+            },
+            auth=(api_key, "")
+        )
+
+        print(f"Status: {response.status_code}")
+
+        data = response.json()
+
+        for job in data.get("results", []):
+            jobs.append({
+                "source": "Reed",
+                "title": job.get("jobTitle"),
+                "company": job.get("employerName"),
+                "location": job.get("locationName"),
+                "url": job.get("jobUrl")
+            })
 
     return jobs
 
@@ -45,31 +49,36 @@ def get_reed_jobs():
 def get_adzuna_jobs():
     app_id = os.environ["ADZUNA_APP_ID"]
     app_key = os.environ["ADZUNA_APP_KEY"]
-
-    response = requests.get(
-        "https://api.adzuna.com/v1/api/jobs/gb/search/1",
-        params={
-            "app_id": app_id,
-            "app_key": app_key,
-            "what": SEARCH_TEXT,
-            "results_per_page": MAX_RESULTS
-        }
-    )
-
-    print(f"Adzuna status: {response.status_code}")
-
-    data = response.json()
+    URL = "https://api.adzuna.com/v1/api/jobs/gb/search/1"
 
     jobs = []
 
-    for job in data.get("results", []):
-        jobs.append({
-            "source": "Adzuna",
-            "title": job.get("title"),
-            "company": job.get("company", {}).get("display_name"),
-            "location": job.get("location", {}).get("display_name"),
-            "url": job.get("redirect_url")
-        })
+    for keyword in KEYWORDS:
+
+        print(f"Searching Adzuna for: {keyword}")
+        
+        response = requests.get(
+            URL,
+            params={
+                "app_id": app_id,
+                "app_key": app_key,
+                "what": keyword,
+                "results_per_page": MAX_RESULTS
+            }
+        )
+    
+        print(f"Adzuna status: {response.status_code}")
+    
+        data = response.json()
+    
+        for job in data.get("results", []):
+            jobs.append({
+                "source": "Adzuna",
+                "title": job.get("title"),
+                "company": job.get("company", {}).get("display_name"),
+                "location": job.get("location", {}).get("display_name"),
+                "url": job.get("redirect_url")
+            })
 
     return jobs
 
@@ -98,13 +107,17 @@ def main():
         
         key = (
             (job["title"] or "").lower().strip(),
-            (job["company"] or "").lower().strip()
+            (job["company"] or "").lower().strip(),
+            (job["location"] or "").lower().strip()
         )
         
         if key not in seen:
             seen.add(key)
             unique_jobs.append(job)
-   
+
+    print(f"Jobs before dedupe: {len(all_jobs)}")
+    print(f"Jobs after dedupe : {len(unique_jobs)}")
+    
     for job in unique_jobs:
         print()
         print("----------------------------------------")
