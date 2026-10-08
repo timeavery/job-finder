@@ -1,6 +1,6 @@
 import os
-import requests
 import json
+import requests
 
 MAX_RESULTS = 10
 SEEN_JOBS_FILE = "seen_jobs.json"
@@ -13,6 +13,17 @@ KEYWORDS = [
     "product owner"
 ]
 
+
+def load_seen_jobs():
+
+    try:
+        with open(SEEN_JOBS_FILE, "r") as f:
+            return set(json.load(f))
+
+    except FileNotFoundError:
+        return set()
+
+
 def save_seen_jobs(seen_jobs):
 
     with open(SEEN_JOBS_FILE, "w") as f:
@@ -22,10 +33,13 @@ def save_seen_jobs(seen_jobs):
             indent=2
         )
 
+
 def get_reed_jobs():
+
     api_key = os.environ["REED_API_KEY"]
-    URL =  "https://www.reed.co.uk/api/1.0/search"
-  
+
+    url = "https://www.reed.co.uk/api/1.0/search"
+
     jobs = []
 
     for keyword in KEYWORDS:
@@ -33,7 +47,7 @@ def get_reed_jobs():
         print(f"Searching Reed for: {keyword}")
 
         response = requests.get(
-            URL,
+            url,
             params={
                 "keywords": keyword,
                 "resultsToTake": MAX_RESULTS
@@ -41,11 +55,12 @@ def get_reed_jobs():
             auth=(api_key, "")
         )
 
-        print(f"Status: {response.status_code}")
+        print(f"Reed status: {response.status_code}")
 
         data = response.json()
 
         for job in data.get("results", []):
+
             jobs.append({
                 "source": "Reed",
                 "title": job.get("jobTitle"),
@@ -58,18 +73,20 @@ def get_reed_jobs():
 
 
 def get_adzuna_jobs():
+
     app_id = os.environ["ADZUNA_APP_ID"]
     app_key = os.environ["ADZUNA_APP_KEY"]
-    URL = "https://api.adzuna.com/v1/api/jobs/gb/search/1"
+
+    url = "https://api.adzuna.com/v1/api/jobs/gb/search/1"
 
     jobs = []
 
     for keyword in KEYWORDS:
 
         print(f"Searching Adzuna for: {keyword}")
-        
+
         response = requests.get(
-            URL,
+            url,
             params={
                 "app_id": app_id,
                 "app_key": app_key,
@@ -77,12 +94,13 @@ def get_adzuna_jobs():
                 "results_per_page": MAX_RESULTS
             }
         )
-    
+
         print(f"Adzuna status: {response.status_code}")
-    
+
         data = response.json()
-    
+
         for job in data.get("results", []):
+
             jobs.append({
                 "source": "Adzuna",
                 "title": job.get("title"),
@@ -97,7 +115,7 @@ def get_adzuna_jobs():
 def main():
 
     seen_jobs = load_seen_jobs()
-    
+
     all_jobs = []
 
     try:
@@ -110,37 +128,53 @@ def main():
     except Exception as ex:
         print(f"Adzuna failed: {ex}")
 
-    print()
-    print(f"Total jobs found: {len(all_jobs)}")
-    
     unique_jobs = []
-    seen = set()
+    dedupe_keys = set()
 
     for job in all_jobs:
-        
+
         key = (
             (job["title"] or "").lower().strip(),
             (job["company"] or "").lower().strip(),
             (job["location"] or "").lower().strip()
         )
-        
-        if key not in seen:
-            seen.add(key)
+
+        if key not in dedupe_keys:
+            dedupe_keys.add(key)
             unique_jobs.append(job)
 
-    print(f"Jobs before dedupe: {len(all_jobs)}")
-    print(f"Jobs after dedupe : {len(unique_jobs)}")
-    
+    new_jobs = []
+    updated_seen_jobs = set(seen_jobs)
+
     for job in unique_jobs:
+
+        job_id = "|".join([
+            (job["title"] or "").lower().strip(),
+            (job["company"] or "").lower().strip(),
+            (job["location"] or "").lower().strip()
+        ])
+
+        if job_id not in seen_jobs:
+            new_jobs.append(job)
+
+        updated_seen_jobs.add(job_id)
+
+    save_seen_jobs(updated_seen_jobs)
+
+    print()
+    print(f"Jobs before dedupe : {len(all_jobs)}")
+    print(f"Jobs after dedupe  : {len(unique_jobs)}")
+    print(f"Previously seen    : {len(seen_jobs)}")
+    print(f"New jobs found     : {len(new_jobs)}")
+
+    for job in new_jobs:
+
         print()
         print("----------------------------------------")
-        # print(f"Source   : {job['source']}")
         print(f"Title    : {job['title']}")
         print(f"Company  : {job['company']}")
         print(f"Location : {job['location']}")
         print(f"URL      : {job['url']}")
-
-    save_seen_jobs(new_seen_jobs)
 
 
 if __name__ == "__main__":
