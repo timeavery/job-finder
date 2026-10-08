@@ -1,7 +1,7 @@
 import urllib.request
 import json
 
-url = "https://remoteok.com/api"
+url = "https://api.adzuna.com/v1/api/jobs/gb/search/1"
 
 request = urllib.request.Request(
     url,
