@@ -1,3 +1,6 @@
+import os
+import requests
+
 def get_reed_jobs(KEYWORDS, MAX_RESULTS):
 
     api_key = os.environ["REED_API_KEY"]
