@@ -1,5 +1,8 @@
 name: Job Search
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
 
