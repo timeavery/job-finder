@@ -10,6 +10,7 @@ KEYWORDS = [
     "solutions consultant",
     "product owner"
 ]
+SEARCH_TEXT = " OR ".join(KEYWORDS)
 
 def get_reed_jobs():
     api_key = os.environ["REED_API_KEY"]
@@ -17,7 +18,7 @@ def get_reed_jobs():
     response = requests.get(
         "https://www.reed.co.uk/api/1.0/search",
         params={
-            "keywords": KEYWORDS,
+            "keywords": SEARCH_TEXT,
             "resultsToTake": MAX_RESULTS
         },
         auth=(api_key, "")
@@ -50,7 +51,7 @@ def get_adzuna_jobs():
         params={
             "app_id": app_id,
             "app_key": app_key,
-            "what": KEYWORDS,
+            "what": SEARCH_TEXT,
             "results_per_page": MAX_RESULTS
         }
     )
