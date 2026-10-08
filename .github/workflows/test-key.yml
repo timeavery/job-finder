@@ -8,13 +8,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check secret exists
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run Reed test
+        run: python reed_test.py
         env:
           REED_API_KEY: ${{ secrets.REED_API_KEY }}
-        run: |
-          if [ -z "$REED_API_KEY" ]; then
-            echo "Key not found"
-            exit 1
-          else
-            echo "Key found"
-          fi
