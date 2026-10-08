@@ -22,5 +22,5 @@ jobs = json.loads(response.read())
 
 print("Jobs found:", len(jobs["results"]))
 
-for job in jobs["results"][:5\]:
+for job in jobs["results"][:5]:
     print(job["jobTitle"])
