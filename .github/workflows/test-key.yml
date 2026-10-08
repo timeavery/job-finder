@@ -15,6 +15,6 @@ jobs:
           python-version: '3.12'
 
       - name: Run Reed test
-        run: python reed_test.py
+        run: python test_key.py
         env:
           REED_API_KEY: ${{ secrets.REED_API_KEY }}
