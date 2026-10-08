@@ -3,6 +3,13 @@ import requests
 
 MAX_RESULTS = 10
 
+KEYWORDS = [
+    "business analyst",
+    "technical consultant",
+    "implementation consultant",
+    "solutions consultant",
+    "product owner"
+]
 
 def get_reed_jobs():
     api_key = os.environ["REED_API_KEY"]
@@ -10,7 +17,7 @@ def get_reed_jobs():
     response = requests.get(
         "https://www.reed.co.uk/api/1.0/search",
         params={
-            "keywords": "business analyst",
+            "keywords": KEYWORDS,
             "resultsToTake": MAX_RESULTS
         },
         auth=(api_key, "")
@@ -43,7 +50,7 @@ def get_adzuna_jobs():
         params={
             "app_id": app_id,
             "app_key": app_key,
-            "what": "business analyst",
+            "what": KEYWORDS,
             "results_per_page": MAX_RESULTS
         }
     )
@@ -82,11 +89,25 @@ def main():
 
     print()
     print(f"Total jobs found: {len(all_jobs)}")
+    
+    unique_jobs = []
+    seen = set()
 
     for job in all_jobs:
+        
+        key = (
+            (job["title"] or "").lower().strip(),
+            (job["company"] or "").lower().strip()
+        )
+        
+        if key not in seen:
+            seen.add(key)
+            unique_jobs.append(job)
+   
+    for job in unique_jobs:
         print()
         print("----------------------------------------")
-        print(f"Source   : {job['source']}")
+        # print(f"Source   : {job['source']}")
         print(f"Title    : {job['title']}")
         print(f"Company  : {job['company']}")
         print(f"Location : {job['location']}")
