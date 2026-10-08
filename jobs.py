@@ -1,6 +1,9 @@
 import os
 import requests
 
+import get_reed_jobs
+import get_adzuna_jobs
+
 from report import write_html_report
 
 MAX_RESULTS = 10
